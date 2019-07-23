@@ -26,6 +26,7 @@ class BurgerBuilder extends Component {
     purchasing: false,
   }
 
+  // 顯示菜單按鈕的 disable 屬性
   updatePurchaseState () {
     let sum = Object.keys(this.state.ingredients)
         .map(igKey => this.state.ingredients[igKey])
@@ -38,6 +39,7 @@ class BurgerBuilder extends Component {
     }));
   }
 
+  // 新增菜色
   addIngredientHandler = (type) => {
     const priceAddition = INGREDIENT_PRICES[type];
     
@@ -50,6 +52,7 @@ class BurgerBuilder extends Component {
     }), this.updatePurchaseState);
   }
 
+  // 移除菜色
   removeIngredientHandler = (type) => {
     if (this.state.ingredients[type] <= 0) return;
 
@@ -63,10 +66,12 @@ class BurgerBuilder extends Component {
     }), this.updatePurchaseState);
   }
 
+  // 顯示 點菜清單
   purchaseHandler = () => {
     this.setState({purchasing: true});
   }
 
+  // 隱藏 點菜清單
   purchaseCancelHandler = () => {
     this.setState({purchasing: false});
   }

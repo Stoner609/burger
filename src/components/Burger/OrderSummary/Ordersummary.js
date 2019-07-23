@@ -14,12 +14,12 @@ const orderSummary = props => {
 
   return (
     <Aux>
-      <h3>Your Order</h3>
+      <h3>你的訂單</h3>
       <p>Hello</p>
       <ul>
         {ingredientSummary}
       </ul>
-      <p>Continue to Checkout?</p>
+      <p>是否要結帳?</p>
     </Aux>
   );
 };
