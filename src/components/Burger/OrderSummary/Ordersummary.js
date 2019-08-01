@@ -21,7 +21,7 @@ class OrderSummary extends Component {
         <ul>
           {ingredientSummary}
         </ul>
-        <p><strong>總共價錢：{this.props.price}</strong></p>
+        <p><strong>總共價錢：{this.props.price.toFixed(2)}</strong></p>
         <p>繼續結帳?</p>
         <Button btnType='Danger' clicked={this.props.purchaseCanceled}>取消</Button>
         <Button btnType='Success' clicked={this.props.purchaseContunued}>繼續</Button>
