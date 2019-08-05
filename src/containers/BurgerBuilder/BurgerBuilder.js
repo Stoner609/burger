@@ -37,29 +37,48 @@ class BurgerBuilder extends Component {
   }
 
   // 顯示菜單按鈕的 disable 屬性
-  updatePurchaseState () {
-    let sum = Object.keys(this.state.ingredients)
-        .map(igKey => this.state.ingredients[igKey])
-        .reduce((total, el) => {
-          return total + el
+  updatePurchaseState (ingredients) {
+    // let sum = Object.keys(this.state.ingredients)
+    //     .map(igKey => this.state.ingredients[igKey])
+    //     .reduce((total, el) => {
+    //       return total + el
+    //     }, 0);
+
+    // this.setState((prev) => ({
+    //   purchasable: sum > 0
+    // }));
+    
+    const sum = 
+      Object.keys(ingredients)
+        .map(igKey => ingredients[igKey])
+        .reduce((sum, el) => {
+          return sum + el;
         }, 0);
 
-    this.setState((prev) => ({
-      purchasable: sum > 0
-    }));
+      this.setState( { purchasable: sum > 0 } );
   }
 
   // 新增菜色
   addIngredientHandler = (type) => {
     const priceAddition = INGREDIENT_PRICES[type];
-    
-    this.setState((prev) => ({
-        ingredients: {
-          ...prev.ingredients,
-          [type]: prev.ingredients[type] + 1
-        },
-        totalPrice: prev.totalPrice + priceAddition
-    }), this.updatePurchaseState);
+    // this.setState((prev) => ({
+    //     ingredients: {
+    //       ...prev.ingredients,
+    //       [type]: prev.ingredients[type] + 1
+    //     },
+    //     totalPrice: prev.totalPrice + priceAddition
+    // }), this.updatePurchaseState);
+
+    let copyIngredients = {...{}, ...this.state.ingredients};
+    copyIngredients[type] = copyIngredients[type] + 1;
+
+    let newTotalPrice = this.state.totalPrice + priceAddition;
+
+    this.setState({ 
+      ingredients: copyIngredients,
+      totalPrice: newTotalPrice
+    });
+    this.updatePurchaseState(copyIngredients);
   }
 
   // 移除菜色
@@ -67,13 +86,24 @@ class BurgerBuilder extends Component {
     if (this.state.ingredients[type] <= 0) return;
 
     const priceAddition = INGREDIENT_PRICES[type];
-    this.setState((prev) => ({
-        ingredients: {
-          ...prev.ingredients,
-          [type]: prev.ingredients[type] - 1
-        },
-        totalPrice: prev.totalPrice - priceAddition
-    }), this.updatePurchaseState);
+    // this.setState((prev) => ({
+    //     ingredients: {
+    //       ...prev.ingredients,
+    //       [type]: prev.ingredients[type] - 1
+    //     },
+    //     totalPrice: prev.totalPrice - priceAddition
+    // }), this.updatePurchaseState);
+
+    let copyIngredients = { ...{}, ...this.state.ingredients };
+    copyIngredients[type] = copyIngredients[type] - 1;
+
+    let newTotalPrice = this.state.totalPrice - priceAddition;
+
+    this.setState({ 
+      ingredients: copyIngredients,
+      totalPrice: newTotalPrice
+    });
+    this.updatePurchaseState(copyIngredients);
   }
 
   // 顯示 點菜清單
