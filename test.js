@@ -33,3 +33,5 @@ var db = firebase.firestore();
 //       console.dir(`${doc.id} => ${ JSON.stringify(doc.data()) }`);
 //   });
 // });
+
+console.log(123);
