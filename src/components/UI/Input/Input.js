@@ -1,19 +1,51 @@
-import React from 'react';
+import React from "react";
 
-import classes from './Input.scss';
+import classes from "./Input.scss";
 
-const input = (props) => {
+const input = props => {
   let inputElement = null;
 
-  switch(props.inputtype) {
+  switch (props.elementType) {
     case "input":
-      inputElement = <input {...props} className={classes.InputElement} />
+      inputElement = (
+        <input
+          className={classes.InputElement}
+          {...props.elementConfig}
+          value={props.value}
+          onChange={props.changed} />
+      );
       break;
     case "textarea":
-      inputElement = <textarea {...props} className={classes.InputElement} />
+      inputElement = (
+        <textarea
+          className={classes.InputElement}
+          {...props.elementConfig}
+          value={props.value}
+          onChange={props.changed} />
+      );
+      break;
+    case "select":
+        inputElement = (
+          <select
+            className={classes.InputElement}
+            value={props.value}
+            onChange={props.changed}>
+              {props.elementConfig.options.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.displayValue}
+                </option>
+              ))}
+          </select>
+        );
       break;
     default:
-      inputElement = <input {...props} className={classes.InputElement} />
+      inputElement = (
+        <input
+          className={classes.InputElement}
+          {...props.elementConfig}
+          value={props.value}
+        />
+      );
       break;
   }
 
@@ -23,6 +55,6 @@ const input = (props) => {
       {inputElement}
     </div>
   );
-}
+};
 
 export default input;
