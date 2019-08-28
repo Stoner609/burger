@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 
 import Aux from '../../hoc/Aux/Aux';
 import Burger from '../../components/Burger/Burger';
@@ -8,19 +9,10 @@ import OrderSummary from '../../components/Burger/OrderSummary/Ordersummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
-
-const INGREDIENT_PRICES = {
-  salad: 0.5,
-  cheese: 0.4,
-  meat: 1.3,
-  bacon: 0.7,
-}
+import * as actionTypes from '../../store/action';
 
 class BurgerBuilder extends Component {
   state = {
-    ingredients: null,
-    totalPrice: 4,
-    purchasable: false,
     purchasing: false,
     loading: false,
     error: null,
@@ -28,83 +20,24 @@ class BurgerBuilder extends Component {
 
   componentDidMount() {
     console.log(this.props);
-    axios.get('https://react-my-burger-75bb7.firebaseio.com/ingredients.json')
-        .then(res => {
-          this.setState({ingredients: res.data});
-        })
-        .catch(error => {
-          this.setState({error: true});
-        });
+    // axios.get('https://react-my-burger-75bb7.firebaseio.com/ingredients.json')
+    //     .then(res => {
+    //       this.setState({ingredients: res.data});
+    //     })
+    //     .catch(error => {
+    //       this.setState({error: true});
+    //     });
   }
 
   // 顯示菜單按鈕的 disable 屬性
   updatePurchaseState (ingredients) {
-    // let sum = Object.keys(this.state.ingredients)
-    //     .map(igKey => this.state.ingredients[igKey])
-    //     .reduce((total, el) => {
-    //       return total + el
-    //     }, 0);
-
-    // this.setState((prev) => ({
-    //   purchasable: sum > 0
-    // }));
-    
-    const sum = 
-      Object.keys(ingredients)
+    const sum = Object.keys(ingredients)
         .map(igKey => ingredients[igKey])
         .reduce((sum, el) => {
           return sum + el;
         }, 0);
 
-      this.setState( { purchasable: sum > 0 } );
-  }
-
-  // 新增菜色
-  addIngredientHandler = (type) => {
-    const priceAddition = INGREDIENT_PRICES[type];
-    // this.setState((prev) => ({
-    //     ingredients: {
-    //       ...prev.ingredients,
-    //       [type]: prev.ingredients[type] + 1
-    //     },
-    //     totalPrice: prev.totalPrice + priceAddition
-    // }), this.updatePurchaseState);
-
-    let copyIngredients = {...{}, ...this.state.ingredients};
-    copyIngredients[type] = copyIngredients[type] + 1;
-
-    let newTotalPrice = this.state.totalPrice + priceAddition;
-
-    this.setState({ 
-      ingredients: copyIngredients,
-      totalPrice: newTotalPrice
-    });
-    this.updatePurchaseState(copyIngredients);
-  }
-
-  // 移除菜色
-  removeIngredientHandler = (type) => {
-    if (this.state.ingredients[type] <= 0) return;
-
-    const priceAddition = INGREDIENT_PRICES[type];
-    // this.setState((prev) => ({
-    //     ingredients: {
-    //       ...prev.ingredients,
-    //       [type]: prev.ingredients[type] - 1
-    //     },
-    //     totalPrice: prev.totalPrice - priceAddition
-    // }), this.updatePurchaseState);
-
-    let copyIngredients = { ...{}, ...this.state.ingredients };
-    copyIngredients[type] = copyIngredients[type] - 1;
-
-    let newTotalPrice = this.state.totalPrice - priceAddition;
-
-    this.setState({ 
-      ingredients: copyIngredients,
-      totalPrice: newTotalPrice
-    });
-    this.updatePurchaseState(copyIngredients);
+      return sum > 0;
   }
 
   // 顯示 點菜清單
@@ -118,49 +51,23 @@ class BurgerBuilder extends Component {
   }
 
   purchaseContinueHandler = () => {
-    // this.setState((prevState) => ({
-    //   loading: true,
-    // }));
-
-    // const order = {
-    //   ingredients: this.state.ingredients,
-    //   price: this.state.totalPrice,
-    //   customer: {
-    //     name: "Stoner Hsu",
-    //     addredd: {
-    //       street: 'test Street',
-    //       zipCode: '12345',
-    //       country: 'Germany'
-    //     },
-    //     email: 'test@test.com'
-    //   },
-    //   deliveryMethod: 'fastest'
+    // const queryParams = [];
+    // for (let i in this.state.ingredients) {
+    //   queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
     // }
+    // queryParams.push('price=' + this.state.totalPrice.toFixed(2));
 
-    // axios.post('/orders.json', order)
-    //   .then(res => {
-    //     this.setState({loading: false, purchasing: false});
-    //   })
-    //   .catch(error => {
-    //     this.setState({loading: false, purchasing: false});
-    //   });
-
-    const queryParams = [];
-    for (let i in this.state.ingredients) {
-      queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
-    }
-    queryParams.push('price=' + this.state.totalPrice.toFixed(2));
-
-    const queryString = queryParams.join('&');
-    this.props.history.push({
-      pathname: '/checkout',
-      search: '?' + queryString
-    });
+    // const queryString = queryParams.join('&');
+    // this.props.history.push({
+    //   pathname: '/checkout',
+    //   search: '?' + queryString
+    // });
+    this.props.history.push('/checkout');
   }
 
   render() {
     const disabledInfo = {
-      ...this.state.ingredients
+      ...this.props.ings
     };
     for (let key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0
@@ -168,24 +75,24 @@ class BurgerBuilder extends Component {
 
     let orderSummary = null;
     let burger = this.state.error ? <p>Ingredients can't be loaded!</p> : <Spinner />;
-    if (this.state.ingredients) {
+    if (this.props.ings) {
       burger = (
         <Aux>
-          <Burger ingredients={this.state.ingredients} />
+          <Burger ingredients={this.props.ings} />
           <BuildControls 
-            ingredientAdded={this.addIngredientHandler}
-            ingredientRemoved={this.removeIngredientHandler}
+            ingredientAdded={this.props.onIngredientAdded}
+            ingredientRemoved={this.props.onIngredientRemoved}
             disabled={disabledInfo}
-            purchasable={this.state.purchasable}
+            purchasable={this.updatePurchaseState(this.props.ings)}
             ordered={this.purchaseHandler}
-            price={this.state.totalPrice}
+            price={this.props.price}
           />
         </Aux>
       );
 
       orderSummary = <OrderSummary 
-        ingredients={this.state.ingredients}
-        price={this.state.totalPrice}
+        ingredients={this.props.ings}
+        price={this.props.price}
         purchaseCanceled={this.purchaseCancelHandler}
         purchaseContunued={this.purchaseContinueHandler}
       />
@@ -206,4 +113,18 @@ class BurgerBuilder extends Component {
   }
 }
 
-export default withErrorHandler(BurgerBuilder, axios);
+const mapStateToProps = state => {
+  return {
+    ings: state.ingredients,
+    price: state.totalPrice
+  };
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onIngredientAdded: (ingName) => dispatch({type: actionTypes.ADD_INGREDIENT, ingredientName: ingName}),
+    onIngredientRemoved: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName}),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
