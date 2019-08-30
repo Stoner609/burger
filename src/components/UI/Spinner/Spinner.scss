@@ -13,6 +13,8 @@
   transform: translateZ(0);
   -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+
+  top: 30vh;
 }
 @-webkit-keyframes load6 {
   0% {
